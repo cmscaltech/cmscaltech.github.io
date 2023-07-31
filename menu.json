@@ -2,32 +2,32 @@
   "_order": ["User Documentation", "User Tutorial", "For Admins"],
   "User Documentation":
   [
-    {"name": "Getting Started", "page": "userdocs/index.html"},
-    {"name": "CLI Tools", "page": "userdocs/clitools.html"},
-    {"name": "Policies", "page": "userdocs/policies.html"},
-    {"name": "Contact", "page": "userdocs/contact.html"},
-    {"name": "FAQ", "page":  "userdocs/faq.html"}
+    {"name": "Getting Started", "page": "userdocs/get-started.html", "feather":  "play"},
+    {"name": "CLI Tools", "page": "userdocs/cli-tools.html", "feather":  "command"},
+    {"name": "Policies", "page": "userdocs/policies.html", "feather":  "lock"},
+    {"name": "Contact", "page": "userdocs/contact.html", "feather": "message-circle"},
+    {"name": "FAQ", "page":  "userdocs/faq.html", "feather":  "send"}
   ],
   "User Tutorial":
   [
-    {"name": "Containers/Pods", "page": "usertutorial/containers-pods.html"},
-    {"name": "Build custom container", "page": "usertutorial/build-custom-container.html"},
-    {"name": "CPU/GPU/Mem Requests", "page": "usertutorial/cpu-gpu-mem-requests.html"},
-    {"name": "Persistent Storage", "page": "usertutorial/persistent-storage.html"},
-    {"name": "Expose Service Port", "page": "usertutorial/expose-service-port.html"},
-    {"name": "Secure Endpoint (SSL Certificate)", "page": "usertutorial/secure-endpoint.html"},
-    {"name": "Network Development (Multus)", "page": "usertutorial/network-development-multus.html"},
-    {"name": "Jupyter Notebook", "page": "usertutorial/jupyter-notebook.html"},
-    {"name": "Batch Jobs", "page": "usertutorial/batch-jobs.html"}
+    {"name": "Containers/Pods", "page": "usertutorial/containers-pods.html", "feather":  "terminal"},
+    {"name": "Build custom container", "page": "usertutorial/build-custom-container.html", "feather":  "archive"},
+    {"name": "CPU/GPU/Mem Requests", "page": "usertutorial/cpu-gpu-mem-requests.html", "feather":  "cpu"},
+    {"name": "Persistent Storage", "page": "usertutorial/persistent-storage.html", "feather":  "database"},
+    {"name": "Expose Service Port", "page": "usertutorial/expose-service-port.html", "feather":  "eye"},
+    {"name": "Secure Endpoint (SSL Certificate)", "page": "usertutorial/secure-endpoint.html", "feather":  "lock"},
+    {"name": "Network Development (Multus)", "page": "usertutorial/network-development-multus.html", "feather":  "globe"},
+    {"name": "Jupyter Notebook", "page": "usertutorial/jupyter-notebook.html", "feather":  "codesandbox"},
+    {"name": "Batch Jobs", "page": "usertutorial/batch-jobs.html", "feather":  "cloud"}
   ],
   "For Admins":
   [
-    {"name": "User Control", "page": "admin/user-control.html"},
-    {"name": "Registry", "page": "admin/registry.html"},
-    {"name": "Cluster Monitoring", "page": "admin/cluster-monitoring.html"},
-    {"name": "Kyverno policies", "page": "admin/kyverno-policies.html"},
-    {"name": "Multus Control and assignment", "page": "admin/multus-control.html"},
-    {"name": "Node Problem Detector", "page": "admin/node-problem-detector.html"},
-    {"name": "New Kubernetes Service/Operator", "page": "admin/new-kube-service-op.html"}
+    {"name": "User Control", "page": "adminpages/user-control.html", "feather": "users"},
+    {"name": "Registry", "page": "adminpages/registry.html", "feather":  "database"},
+    {"name": "Cluster Monitoring", "page": "adminpages/cluster-monitoring.html", "feather":  "bar-chart"},
+    {"name": "Kyverno policies", "page": "adminpages/kyverno-policies.html", "feather":  "alert-triangle"},
+    {"name": "Multus Control and assignment", "page": "adminpages/multus-control.html", "feather":  "settings"},
+    {"name": "Node Problem Detector", "page": "adminpages/node-problem-detector.html", "feather":  "alert-octagon"},
+    {"name": "New Kubernetes Service/Operator", "page": "adminpages/new-kube-service-op.html", "feather":  "tool"}
   ]
 }
