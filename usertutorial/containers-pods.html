@@ -1,0 +1,153 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h1">Containers, Pods</h1>
+</div>
+
+<h2 class="h2">Basics of Kubernetes</h2>
+<h3 class="h3">Pods</h3>
+Pods are the smallest deployable units of computing that you can create and manage in Kubernetes.<br/>
+
+A Pod (as in a pod of whales or pea pod) is a group of one or more containers, with shared storage and network resources, and a specification for how to run the containers. A Pod's contents are always co-located and co-scheduled, and run in a shared context. A Pod models an application-specific "logical host": it contains one or more application containers which are relatively tightly coupled. In non-cloud contexts, applications executed on the same physical or virtual machine are analogous to cloud applications executed on the same logical host.<br/>
+The shared context of a Pod is a set of Linux namespaces, cgroups, and potentially other facets of isolation - the same things that isolate a container. Within a Pod's context, the individual applications may have further sub-isolations applied.<br/>
+<br/>
+A Pod is similar to a set of containers with shared namespaces and shared filesystem volumes.<br/>
+<br/>
+More details about Pods can be found here: <a href="https://kubernetes.io/docs/concepts/workloads/pods/">https://kubernetes.io/docs/concepts/workloads/pods/</a>
+<br/><br/>
+<h3 class="h3">Deployment</h3>
+A Deployment provides declarative updates for Pods and ReplicaSets.<br/>
+<br/>
+You describe a desired state in a Deployment, and the Deployment Controller changes the actual state to the desired state at a controlled rate. You can define Deployments to create new ReplicaSets, or to remove existing Deployments and adopt all their resources with new Deployments.<br/>
+<br/>
+More details about Deployment can be found here: <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">https://kubernetes.io/docs/concepts/workloads/controllers/deployment/</a>
+<br/><br/>
+<h3 class="h3">ReplicaSet</h3>
+A ReplicaSet's purpose is to maintain a stable set of replica Pods running at any given time. As such, it is often used to guarantee the availability of a specified number of identical Pods.<br/>
+<br/>
+A ReplicaSet is defined with fields, including a selector that specifies how to identify Pods it can acquire, a number of replicas indicating how many Pods it should be maintaining, and a pod template specifying the data of new Pods it should create to meet the number of replicas criteria. A ReplicaSet then fulfills its purpose by creating and deleting Pods as needed to reach the desired number. When a ReplicaSet needs to create new Pods, it uses its Pod template.<br/>
+<br/>
+More details about ReplicaSet can be found here: <a href="https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/">https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/</a>
+<br/><br/>
+<h2 class="h2">Examples</h2>
+<h3 class="h3">Deploy first pod</h3>
+Create a file <code>example.yaml</code> and put this content inside the file:<br/>
+<pre>
+  <code>
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+  </code>
+</pre>
+Then, execute the following command <code>kubectl create -f example.yaml</code>. Output should be:<br/>
+<pre>
+  <code>
+$ kubectl create -f example.yaml
+pod/nginx-pod created
+  </code>
+</pre>
+Lets check pod status, you can do this with the following command: <code>kubectl get pods</code>. Expected output:<br/>
+<pre>
+  <code>
+$ kubectl get pods
+NAME      READY   STATUS    RESTARTS   AGE
+nginx-pod   1/1     Running   0          6s
+  </code>
+</pre>
+Be aware, Pod will run for it's lifetime and if you want to ensure it is always running - please look at Deployment section<br/>
+You can also delete pod by specifying its name with command <code>kubectl delete pod POD_NAME</code>, For example lets delete deployed pod:<br/>
+<pre>
+  <code>
+$ kubectl delete pod nginx-pod
+pod "nginx-pod" deleted
+  </code>
+</pre>
+<br/>
+<h3 class="h3">Deploy Deployment</h3>
+We will use same example as in Pod, but now we want to ensure that Pod remains running after termination. For this we will modify the yaml to make it Deployment.<br/>
+Here is modified previous example as Deployment kind:<br/>
+<pre>
+<code>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      name: nginx-pod
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+</code>
+</pre>
+Then, execute the following command <code>kubectl create -f example.yaml</code>. Output:<br/>
+<pre>
+  <code>
+$ kubectl create -f example.yaml
+Error from server: error when creating "example.yaml": admission webhook "validate.kyverno.svc-fail" denied the request:
+
+resource Deployment/jbalcas/nginx-deployment was blocked due to the following policies
+
+all-containers-need-requests-and-limits:
+  autogen-check-container-resources: 'validation error: All containers must have CPU
+    and memory resource requests and limits defined. rule autogen-check-container-resources
+    failed at path /spec/template/spec/containers/0/resources/limits/'
+  </code>
+</pre>
+As we can see from the error - it failed due to validation error. We need to add CPU and Memory Requests and Limits. For example:
+<pre>
+  <code>
+resources:
+  limits:
+    memory: 100Mi
+    cpu: 100m
+  requests:
+    memory: 100Mi
+    cpu: 100m
+  </code>
+</pre>
+And submit again with the following command <code>kubectl create -f example.yaml</code>. Output:
+<pre>
+  <code>
+$ kubectl apply -f example.yaml
+deployment.apps/nginx-deployment created
+  </code>
+</pre>
+We can check deployment and pod status with <code>kubectl</code> commands:
+<pre>
+  <code>
+$ kubectl get deployment
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-deployment   1/1     1            1           2m14s
+$ kubectl get pods
+NAME                                READY   STATUS    RESTARTS   AGE
+nginx-deployment-64f854c75b-dpspj   1/1     Running   0          2m17s
+  </code>
+</pre>
+If you will delete POD, Kubernetes will notice that, and Deployment will make sure to restart POD on another or same node. Once done, you can delete your deployment with the following command:
+<pre>
+  <code>
+$ kubectl delete deployment nginx-deployment
+deployment.apps "nginx-deployment" deleted
+  </code>
+</pre>
+<br/>
+<h3 class="h3">Kubernetes Workload Resources</h3>
+For other resources (ReplicaSet, StatefulSets, DaemonSets, Jobs, Cronjobs, Replication controllers) you can find more details here: <a href="https://kubernetes.io/docs/concepts/workloads/">https://kubernetes.io/docs/concepts/workloads/</a>
