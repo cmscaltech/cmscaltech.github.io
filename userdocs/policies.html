@@ -1,0 +1,25 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h1">Policies, Limits, Requirements</h1>
+</div>
+
+<h2 class="h2">Caltech Tier2 Policies, Limits, Requirements</h2>
+<div>To be added</div>
+
+<h2 class="h2">SDN Testbed Policies, Limits, Requirements</h2>
+<ul>
+    <li>Privileged mode is not allowed. Kubernetes flag: <code>allowPrivilegeEscalation</code></li>
+    <li>Host IPC namespace use is not allowed. Kubernetes flag: <code>hostIPC</code></li>
+    <li>Host PID namespace use is not allowed. Kubernetes flag: <code>hostPID</code></li>
+    <li>Use of hostNetwork and hostPort not allowed. Kubernetes flag: <code>hostNetwork, hostPort</code>. Please use Port Expose and HAProxy</li>
+    <li>The label <code>pod.kubernetes.io/lifetime</code> is required. Value must be integer. </li>
+    <li>Use of <code>default</code> namespace is not allowed. Always use your own username or assigned group namespace</li>
+    <li>CPU, Memory limits and requests must be always defined. See more details below of min/max requests</li>
+    <li>Max allocated (Requests) resources per namespace allowed for CPU:<code>16 cores</code> and Mem:<code>32Gi</code></li>
+    <li>Max allocated (Limits) resources per namespace allowed for CPU:<code>32 cores</code> and Mem:<code>64Gi</code></li>
+    <li>Max Persistent Volume Claims: <code>5</code> and total allowed storage per namespace: <code>50Gi</code></li>
+    <li>Pod default requests for CPU: <code>500m</code>, Mem:<code>500Mi</code>, Storage:<code>None</code></li>
+    <li>Pod minimum requests for CPU: <code>100m</code>, Mem:<code>100Mi</code>, Storage:<code>1G</code></li>
+    <li>Pod maximum requests for CPU: <code>4</code>, Mem:<code>5Gi</code>, Storage:<code>10G</code></li>
+    <li><code>hostpath</code> restricted to only certain paths. The policy ensures the only directory that can be mounted as a hostPath volume is <code>/storage/af/user/{USERNAME}</code>. This is the same as your home directory on login-[1,2,3].hep.caltech.edu</li>
+    <li>Any capabilities added beyond the allowed list (<code>AUDIT_WRITE, CHOWN, DAC_OVERRIDE, FOWNER, FSETID, KILL, MKNOD, NET_BIND_SERVICE, SETFCAP, SETGID, SETPCAP, SETUID, SYS_CHROOT</code>) are disallowed.</li>
+</ul>
