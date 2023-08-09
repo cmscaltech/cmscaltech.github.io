@@ -1,0 +1,103 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h1">Multus network</h1>
+</div>
+
+<h2 class="h2">Basics of Multus CNI</h2>
+
+Multus CNI is a container network interface (CNI) plugin for Kubernetes that enables attaching multiple network interfaces to pods.<br/>
+
+Typically, in Kubernetes each pod only has one network interface (apart from a loopback). However, Multus allows to create a multi-homed pod that has multiple interfaces<br/>
+<br/>
+
+More details about Multus CNI can be found here: <a href="https://github.com/k8snetworkplumbingwg/multus-cni">https://github.com/k8snetworkplumbingwg/multus-cni</a>
+<br/><br/>
+<h2 class="h2">Examples</h2>
+<h3 class="h3">Deploy a Pod to use multus network</h3>
+Create a file <code>example.yaml</code> and enter the following content in the file:<br/>
+<pre>
+  <code>
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-deployment
+  annotations:
+    k8s.v1.cni.cncf.io/networks: "xyz/polka"
+spec:
+  affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: feature.node.kubernetes.io/polka
+                operator: In
+                values:
+                 - "true"
+  containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+  </code>
+</pre>
+Note : Here, 'xyz' is the namespce and polka is the name of NetworkAttachmentDefinition(Realted to project name). Also, polka in <b> key: feature.node.kubernetes.io/polka </b> is the bridge interface on the node.(This name is also related to project's name ) in SDN testbed</br>
+</br>
+Then, execute the following command <code>kubectl create -f example.yaml</code>. Output should be:<br/>
+<pre>
+  <code>
+$ kubectl create -f example.yaml
+pod/nginx-pod created
+  </code>
+</pre>
+Lets check pod status, you can do this with the following command: <code>kubectl get pods</code>. Expected output:<br/>
+<pre>
+  <code>
+$ kubectl get pods
+NAME      READY   STATUS    RESTARTS   AGE
+nginx-pod   1/1     Running   0          6s
+  </code>
+</pre>
+Be aware, Pod will run for it's lifetime and if you want to ensure it is always running - please look at Deployment section<br/>
+You can also delete pod by specifying its name with command <code>kubectl delete pod POD_NAME</code>, For example lets delete deployed pod:<br/>
+<pre>
+  <code>
+$ kubectl delete pod nginx-pod
+pod "nginx-pod" deleted
+  </code>
+</pre>
+<br/>
+
+
+</pre>
+If it failed due to validation error shown below : </br>
+Error from server: error when creating "example.yaml": admission webhook "validate.kyverno.svc-fail" denied the request:
+
+resource Deployment/jbalcas/nginx-deployment was blocked due to the following policies
+
+all-containers-need-requests-and-limits:
+autogen-check-container-resources: 'validation error: All containers must have CPU
+and memory resource requests and limits defined. rule autogen-check-container-resources
+failed at path /spec/template/spec/containers/0/resources/limits/'</br>
+
+We need to add CPU and Memory Requests and Limits. For example:
+<pre>
+  <code>
+resources:
+  limits:
+    memory: 100Mi
+    cpu: 100m
+  requests:
+    memory: 100Mi
+    cpu: 100m
+  </code>
+</pre>
+And submit again with the following command <code>kubectl create -f example.yaml</code>. Output:
+<pre>
+  <code>
+$ kubectl apply -f example.yaml
+deployment.apps/nginx-deployment created
+  </code>
+</pre>
+
+<h3 class="h3">Kubernetes Networking and Network Policy </h3>
+For other type of network and network policies, checkout here: <a href="https://kubernetes.io/docs/concepts/cluster-administration/addons/">https://kubernetes.io/docs/concepts/cluster-administration/addons/</a>
