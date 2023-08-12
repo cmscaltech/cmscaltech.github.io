@@ -1,0 +1,85 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h1">Multus control and assignment</h1>
+</div>
+
+<h2 class="h2">Basics of Multus CNI plugin</h2>
+
+Multus CNI is a container network interface (CNI) plugin for Kubernetes that enables attaching multiple network interfaces to pods.<br/>
+
+Typically, in Kubernetes each pod only has one network interface (apart from a loopback). However, Multus allows to create a multi-homed pod that has multiple interfaces<br/>
+
+<br/>
+<h3 class="h3">Multus Thick plugin</h3>
+** Yet to add Thick plugin **
+<br/><br/>
+<h3 class="h3">Network Attachment definition</h3>
+To add multiple interfaces to a pod, it is required to create a Network Attachment Definition to use as the plugin. </br>
+Below is an example of a Network Attachment Definition yaml </br>
+</br>
+Create a file <code>example.yaml</code> and enter the following content in the file:<br/>
+<pre>
+  <code>
+---
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: polka
+  namespace: xyz
+spec:
+  config: '{
+    "cniVersion": "0.3.1",
+    "name": "polka",
+    "plugins": [
+        {"name": "polka",
+         "type": "macvlan",
+         "master": "polka",
+         "mode": "bridge",
+         "isDefaultGateway": false,
+         "forceAddress": false,
+         "ipMasq": false,
+         "hairpinMode": false,
+         "ipam": {
+              "type": "host-local",
+              "subnet": "10.1.14.0/24",
+              "rangeStart": "10.1.14.10",
+              "rangeEnd": "10.1.14.255"
+             }
+        }
+      ]
+    }'
+  </code>
+</pre>
+NOTE: </br>
+In metadata the <code> name </code>field has a name, and this is how pods use this configuration.  </br>
+The <code>config </code> field is a CNI configuration. </br>
+The <code>type</code> field uses different virtual interface types such as ipvlan and macvlan.</br>
+The <code>master</code> field matches the interface name on the hosts in the cluster. </br>
+The <code>mode</code> field uses multiple options such as bridge and vlan.</br>
+The <code>ipam</code> section is used for assigning ip address range to the multus interface. The available ipam pluggins are host-local, static.
+
+</br>
+</br>
+Then, execute the following command <code>kubectl apply -f example.yaml</code>. Output should be:<br/>
+<pre>
+  <code>
+$ kubectl apply -f example.yaml -n xyz
+ networkattachmentdefinition.k8s.cni.cncf.io/polka created
+  </code>
+</pre>
+Lets check Network Attachment Definition status, you can do this with the following command: <code>kubectl get network-attachment-definitions</code>. Expected output:<br/>
+<pre>
+  <code>
+$ kubectl get network-attachment-definitions -n xyz 
+NAME    AGE
+polka   8d 
+  </code>
+</pre>
+You can also describe Network Attachment Definition by specifying its name with command <code>kubectl describe network-attachment-definitions NAME_OF_NetworkAttachmentdefinition</code>
+<pre>
+  <code>
+$ kubectl describe network-attachment-definitions polka -n xyz
+
+</code>
+</pre>
+<br/>
+
