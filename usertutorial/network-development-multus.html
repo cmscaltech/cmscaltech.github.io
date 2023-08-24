@@ -6,7 +6,7 @@
 
 Multus CNI is a container network interface (CNI) plugin for Kubernetes that enables attaching multiple network interfaces to pods.<br/>
 
-Typically, in Kubernetes each pod only has one network interface (apart from a loopback). However, Multus allows to create a multi-homed pod that has multiple interfaces<br/>
+Typically, in Kubernetes, each pod only has one network interface (apart from a loopback). However, Multus allows to create a multi-homed pod that has multiple interfaces<br/>
 <br/>
 
 More details about Multus CNI can be found here: <a href="https://github.com/k8snetworkplumbingwg/multus-cni">https://github.com/k8snetworkplumbingwg/multus-cni</a>
@@ -33,7 +33,7 @@ spec:
                  - "true"
   </code>
 </pre>
-Note : Here, 'xyz' is the namespce and polka is the name of NetworkAttachmentDefinition(Realted to project name). Also, polka in <b> key: feature.node.kubernetes.io/polka </b> is the bridge interface on the node.(This name is also related to project's name ) in SDN testbed</br>
+Note: Here, 'xyz' is the namespace and polka is the name of NetworkAttachmentDefinition(Related to the project name). Also, polka in <b> key: feature.node.kubernetes.io/polka </b> is the bridge interface on the node. (This name is also related to the project's name ) in SDN testbed</br>
 </br>
 Then, execute the following command <code>kubectl create -f example.yaml</code>. Output should be:<br/>
 <pre>
@@ -42,7 +42,7 @@ $ kubectl create -f example.yaml
 pod/nginx-deployment created
   </code>
 </pre>
-Lets check deployment status, you can do this with the following command: <code>kubectl get pods</code>. Expected output:<br/>
+Let's check the deployment status, you can do this with the following command: <code>kubectl get pods</code>. Expected output:<br/>
 <pre>
   <code>
 $ kubectl get pods
@@ -51,7 +51,7 @@ nginx-deployment   1/1     Running   0          6s
   </code>
 
 </pre>
-If it failed due to validation error then please follow the instruction described here : <a href="https://cmscaltech.github.io/?page=usertutorial/containers-pods.html">https://cmscaltech.github.io/?page=usertutorial/containers-pods.html</a>
+If it failed due to a validation error then please follow the instructions described here: <a href="https://cmscaltech.github.io/?page=usertutorial/containers-pods.html">https://cmscaltech.github.io/?page=usertutorial/containers-pods.html</a>
 
 <h3 class="h3">Kubernetes Networking and Network Policy </h3>
 For other type of network and network policies, checkout here: <a href="https://kubernetes.io/docs/concepts/cluster-administration/addons/">https://kubernetes.io/docs/concepts/cluster-administration/addons/</a>
