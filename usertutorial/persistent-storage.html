@@ -1,0 +1,69 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h1">Persistent Storage</h1>
+</div>
+
+<h2 class="h2">Basics of Ceph</h2>
+
+Ceph is a highly scalable distributed-storage solution offering object, block, and file storage. Ceph clusters are designed to run on any hardware using the so-called CRUSH algorithm (Controlled Replication Under Scalable Hashing).
+<br/>
+One main benefit of this deployment is that you get the highly scalable storage solution of Ceph without having to configure it manually using the Ceph command line, because Rook automatically handles it. Kubernetes applications can then mount block devices and filesystems from Rook to preserve and monitor their application data.
+
+<br/><br/>
+<h2 class="h2">Examples</h2>
+<h3 class="h3">Deploy a Deployment with an attached persistent storage</h3>
+
+First of all - we will need to create a new yaml file <code>pvc-block-device.yaml</code> and add this information below:
+<pre>
+  <code>
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: my-test-pvc
+  namespace: REPLACE_ME_TO_YOUR_NAMESPACE
+  labels:
+    kubernetes.io/cluster-service: "true"
+spec:
+  storageClassName: rook-ceph-block
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  </code>
+</pre>
+  This will create a block device on ceph, which can be mounted on your Pod/Deployment.
+
+
+Create a deployment yaml file,<code>example.yaml</code> , as explained here : <a href="https://cmscaltech.github.io/?page=usertutorial/containers-pods.html">https://cmscaltech.github.io/?page=usertutorial/containers-pods.html</a>, then enter additional information to mount just created block device to your deployment:<br/>
+<pre>
+  <code>
+---
+volumeMounts:
+- name: my-test-pvc
+  mountPath: /opt
+...
+volumes:
+- name: my-test-pvc-vol
+  persistentVolumeClaim:
+    claimName: my-test-pvc
+  </code>
+</pre>
+Then, execute the following command <code>kubectl create -f example.yaml</code>. Output should be:<br/>
+<pre>
+  <code>
+$ kubectl create -f example.yaml
+pod/nginx-deployment created
+  </code>
+</pre>
+Let's check the deployment status, you can do this with the following command: <code>kubectl get pods</code>. Expected output:<br/>
+<pre>
+  <code>
+$ kubectl get pods
+NAME      READY   STATUS    RESTARTS   AGE
+nginx-deployment   1/1     Running   0          6s
+  </code>
+  Any data which will be written to my-test-pvc will remain during container restart, deletion. Data will be gone if you delete a PersistentVolumeClaim, named <code>my-test-pvc</code>.
+</pre>
+If it failed due to a validation error then please follow the instructions described here: <a href="https://cmscaltech.github.io/?page=usertutorial/containers-pods.html">https://cmscaltech.github.io/?page=usertutorial/containers-pods.html</a>
+
