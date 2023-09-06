@@ -1,0 +1,54 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h1">Ingress Controller for tier2</h1>
+</div>
+
+<h2 class="h2">What is Ingress?</h2>
+Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster. Traffic routing is controlled by rules defined on the Ingress resource.</br>
+An Ingress may be configured to give Services externally-reachable URLs, load balance traffic, terminate SSL / TLS, and offer name-based virtual hosting.</br>
+An Ingress controller is responsible for fulfilling the Ingress, usually with a load balancer, though it may also configure your edge router or additional frontends to help handle the traffic.</br>
+</br>
+
+<h2 class="h2">Ingress Controller</h2>
+In order for the Ingress resource to work, the cluster must have an ingress controller running.</br>
+We have chosen HAProxy from the list of available <a href="https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/">Ingress Controllers</a>
+</br>
+
+<h3 class="h3">HAProxy Ingress Controller</h3>
+HAProxy Kubernetes Ingress Controller implements the routing rules defined in the Kubernetes Ingress resources. It adds and removes routes in its underlying HAProxy load balancer configuration when it detects that pods have been added or removed from the cluster. Unlike a traditional load balancer, the ingress controller runs as a pod inside the cluster.</br>
+</br>
+
+<h4 class="h4">Steps to install HAProxy Ingress Controller</h4>
+        <ul>
+                  <li>kubectl create -f <a href="https://github.com/cmscaltech/kube-confs/blob/master/system-services/tier2/haproxy/daemonset.yaml">haproxy.yaml</a></li>
+                  <li>Add the DNS record for HAProxy wildcard load balancer(*.tier2-lb)</li>
+        </ul>
+</br>
+
+<h3 class="h3">Example</h3>
+Create an Ingress object using the <a href="https://github.com/cmscaltech/kube-confs/blob/master/system-services/tier2/haproxy/test/https-echo.yaml">yaml file</a>
+</br>
+<pre>
+  <code>
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: echo-https-ingress
+    namespace: testing
+    annotations:
+      kubernetes.io/ingress.class: haproxy
+spec:
+    rules:
+    - host: "echo-app-https.tier2-lb.ultralight.org"
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: echo-https-service
+              port:
+                number: 8443
+  </code>
+</pre>
+NOTE: The <code> host </code>field can be a wildcard (for example “*.tier2-lb.ultralight.org”). Wildcard matches require the HTTP host header is equal to the suffix of the wildcard rule.  </br>

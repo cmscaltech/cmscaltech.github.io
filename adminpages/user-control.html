@@ -1,0 +1,24 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h1">Service Accounts for Users</h1>
+</div>
+
+<h2 class="h2">How to use service accounts</h2>
+To use a kubernetes service account, we do the following </br>
+</br>
+<ol type = "1">
+      <li>Create a ServiceAccount object using a kubernetes client like <code> kubectl </code> or a manifest that defines the object.</li>
+      <li>Grant permissions to the ServiceAccount object using an authorization mechanism such as RBAC</li>
+      <li>Retrieve the ServiceAccount token to get authorized for the kubernetes cluster</li>
+</ol>
+
+<h3 class="h3">Steps to create Service Account:</h3>
+<ul>
+<li>In tier2 and SDN we use the manifest file to create ServiceAccount object and it's RBAC.</li>
+<li>Manifests used in tier2: <a href="https://gitub.com/cmscaltech/kube-confs/tree/master/system-services/sdn/users">https://gitub.com/cmscaltech/kube-confs/tree/master/system-services/sdn/users</a></li>
+<li>Then, Use <code> kubectl </code> to create Service Account</li>
+<li>After the Service Account is created, the token can be generated using the python program and is saved in the home directory os a user.</li>
+<li>Program to update token : <a href="https://github.com/cmscaltech/puppet-centos7/blob/master/modules/kubernetes/files/opt/dist/scripts/updateKubeConfig.py-tier2">https://github.com/cmscaltech/puppet-centos7/blob/master/modules/kubernetes/files/opt/dist/scripts/updateKubeConfig.py-tier2</a></li>
+<li>This program is stored in the control-plane node. So, run the puppet on control-plane node after Service Account gets created for config file</li>
+<li>This program updates config file on a weekly basis. So, the config file is valid only for 1 week.</li>
+</ul>
+
