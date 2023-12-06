@@ -20,6 +20,6 @@
     <li>Pod default requests for CPU: <code>500m</code>, Mem:<code>500Mi</code>, Storage:<code>None</code></li>
     <li>Pod minimum requests for CPU: <code>100m</code>, Mem:<code>100Mi</code>, Storage:<code>1G</code></li>
     <li>Pod maximum requests for CPU: <code>4</code>, Mem:<code>5Gi</code>, Storage:<code>10G</code></li>
-    <li><code>hostpath</code> restricted to only certain paths. The policy ensures the only directory that can be mounted as a hostPath volume is <code>/storage/af/user/{USERNAME}</code>. This is the same as your home directory on login-[1,2,3].hep.caltech.edu</li>
+    <li><code>hostpath</code> restricted to only certain paths. The policy ensures the only directory that can be mounted as a hostPath volume is <code>/storage/af/user/{USERNAME}</code>. This is the same as your home directory on login-[1,2,3].ultralight.org</li>
     <li>Any capabilities added beyond the allowed list (<code>AUDIT_WRITE, CHOWN, DAC_OVERRIDE, FOWNER, FSETID, KILL, MKNOD, NET_BIND_SERVICE, SETFCAP, SETGID, SETPCAP, SETUID, SYS_CHROOT</code>) are disallowed.</li>
 </ul>
