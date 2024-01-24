@@ -1,0 +1,24 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h1">Working with Images</h1>
+  </div>
+  
+  <h2 class="h2">Pulling and Pushing Images</h2>
+  Ensure that you have docker installed on your machine</br>
+  To pull and push Docker images from Harbor, you can use the 'docker' command-line tool</br>
+  </br>
+  
+  <h4 class="h4">Pulling an image from Harbor</h4>
+    If the project that the image belongs to is private, you must sign in first:</br>
+    <code>docker login harbor.tier2-lb.ultralight.org</code> </br>
+    You can now pull an image:</br>
+    <code>docker pull harbor.tier2-lb.ultralight.org/repository/image-name:tag</code>
+
+    <h4 class="h4">Pushing an image to Harbor</h4>
+    <code>docker tag local-image:tag harbor.tier2-lb.ultralight.org/repository/image-name:tag</code>
+    <code>docker push harbor.tier2-lb.ultralight.org/repository/image-name:tag</code>
+
+    Note:</br>
+    Tier2 Harbor_Address : harbor.tier2-lb.ultralight.org </br>
+    Make sure to authenticate with Harbor if required. </br>
+    You can use the docker login command to log in with your Harbor credentials before pushing or pulling images.
+

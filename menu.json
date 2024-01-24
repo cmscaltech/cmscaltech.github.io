@@ -11,6 +11,7 @@
   "User Tutorial":
   [
     {"name": "Containers/Pods", "page": "usertutorial/containers-pods.html", "feather":  "terminal"},
+    {"name": "Woking with Images (Harbor)", "page": "usertutorial/harbor-user.html", "feather":  "terminal"},
     {"name": "Build custom container", "page": "usertutorial/build-custom-container.html", "feather":  "archive"},
     {"name": "CPU/GPU/Mem Requests", "page": "usertutorial/cpu-gpu-mem-requests.html", "feather":  "cpu"},
     {"name": "Persistent Storage", "page": "usertutorial/persistent-storage.html", "feather":  "database"},
