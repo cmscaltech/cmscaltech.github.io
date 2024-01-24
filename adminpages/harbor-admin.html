@@ -1,0 +1,29 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h1">Harbor for tier2</h1>
+  </div>
+  
+  <h2 class="h2">What is Harbor?</h2>
+  Harbor is an open source registry that secures artifacts with policies and role-based access control, 
+  ensures images are scanned and free from vulnerabilities, and signs images as trusted.</br>
+  </br>
+  
+  <h2 class="h2">Harbor Administration</h2>
+  Harbor supports different modes for authenticating users and managing user accounts. </br>
+  <ul>
+    <li>Database Authentication</li>
+    <li>LDAP/Active Directory authentication</li>
+    <li>OIDC Provider Authentication</li>
+  </ul>
+
+  <h4 class="h4">Configuring Authentication</h4>
+
+  <ul>
+    <li>Log in to the Harbor interface with an account that has Harbor system administrator privileges.</li>
+    <li>Under Administration, go to Configuration and select the Authentication tab.</li>
+    <li>Select the Auth Mode and click save.</li>
+  </ul>
+  
+  NOTE:</br>
+  
+  For now we are using Database Authentication and selected Allow Self-Registration. So, users can register themselves in Harbor.</br>
+  We are planning to use OIDC Auth-mode in future.

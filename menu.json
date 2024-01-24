@@ -23,7 +23,7 @@
   "For Admins":
   [
     {"name": "User Control", "page": "adminpages/user-control.html", "feather": "users"},
-    {"name": "Registry", "page": "adminpages/registry.html", "feather":  "database"},
+    {"name": "Harbor Registry", "page": "adminpages/harbor-admin.html", "feather":  "database"},
     {"name": "Ingress Controller", "page": "adminpages/ingress-controller.html", "feather":  "settings"},
     {"name": "Cluster Monitoring", "page": "adminpages/cluster-monitoring.html", "feather":  "bar-chart"},
     {"name": "Kyverno policies", "page": "adminpages/kyverno-policies.html", "feather":  "alert-triangle"},
