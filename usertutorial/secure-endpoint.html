@@ -1,0 +1,137 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h1">Secure Endpoint (SSL Certificate)</h1>
+</div>
+
+<h2 class="h2">Basics of Certificates</h2>
+An SSL certificate is a digital certificate that authenticates a website's identity and enables an encrypted connection. SSL stands for Secure Sockets Layer, a security protocol that creates an encrypted link between a web server and a web browser.
+<br/>
+Currently Tier2 supports and allows users to request Let's Encrypt and Incommon V2 Certificates. Let's Encrypt is a free, automated, and open certificate authority (CA), run for the public's benefit. It is a service provided by the Internet Security Research Group (ISRG). Incommon V2 is a certificate authority that provides certificates to the research and education community.
+Incommon V2 - is a paid service, and it is not free of charge. Be aware if you want to run WLCG Grid Computing Service, you will need to use Incommon V2 certificates.
+
+<br/><br/>
+<h2 class="h2">Examples</h2>
+<h3 class="h3">Request certificate</h3>
+
+First of all - we will need to create a new yaml file <code>certificate.yaml</code> and add this information below:
+<pre>
+  <code>
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: <REPLACE_ME_WITH_NAME>
+  namespace: <REPLACE_ME_WITH_NAMESPACE>
+spec:
+  commonName: <REPLACE_ME_WITH_FQDN>
+  dnsNames:
+  - <REPLACE_ME_WITH_FQDN>
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: <REPLACE_ME_WITH_ISSUER>
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 4096
+  secretName: <REPLACE_ME_WITH_SECRET_NAME>
+  </code>
+</pre>
+Where you will need to replace the following parameters to:
+<ul>
+    <li><code><REPLACE_ME_WITH_NAME></code> - metadata name - for own use to understand what it is</li>
+    <li><code><REPLACE_ME_WITH_NAMESPACE></code> - namespace where you want to create a certificate</li>
+    <li><code><REPLACE_ME_WITH_FQDN></code> - Fully Qualified Domain Name (FQDN) of your service. Only <any_name>.ultralight.org supported</li>
+    <li><code><REPLACE_ME_WITH_ISSUER></code> - issuer name, for Let's Encrypt it should be <code>letsencrypt-prod</code> or <code>letsencrypt-staging</code>. While testing - please use <code>letsencrypt-staging</code>. For Incommon V2 - use <code>incommon-v2-prod</code></li>
+    <li><code><REPLACE_ME_WITH_SECRET_NAME></code> - secret name, Kubernetes will write new certificates in Secrets</li>
+</ul>
+Then, execute the following command <code>kubectl create -f certificate.yaml</code>. Once certificate is created - you will have new secret, based on value <code>REPLACE_ME_WITH_SECRET_NAME</code>.
+
+
+<pre>
+  <code>
+(cmd)>kubectl describe secrets <REPLACE_ME_WITH_SECRET_NAME> -n <REPLACE_ME_WITH_NAMESPACE>
+Name:         <SECRET_NAME>
+Namespace:    <NAMESPACE>
+Labels:       controller.cert-manager.io/fao=true
+Annotations:  cert-manager.io/alt-names: <FQDN>
+              cert-manager.io/certificate-name: <FQDN>
+              cert-manager.io/common-name: <FQDN>
+              cert-manager.io/ip-sans:
+              cert-manager.io/issuer-group: cert-manager.io
+              cert-manager.io/issuer-kind: ClusterIssuer
+              cert-manager.io/issuer-name: <ISSUER>
+              cert-manager.io/subject-countries: US
+              cert-manager.io/subject-organizations: California Institute of Technology
+              cert-manager.io/subject-provinces: California
+              cert-manager.io/uri-sans:
+
+Type:  kubernetes.io/tls
+
+Data
+====
+tls.key:  3243 bytes
+tls.crt:  8677 bytes
+  </code>
+</pre>
+To use this certificate in your pod - you will need to mount secret with the certificate to your pod. Example to mount secret to your pod:
+<pre>
+  <code>
+...
+volumeMounts:
+  - mountPath: /etc/grid-security/xrootdcert.pem
+    name: xrootd-k8s-redir-stageout-cert
+    subPath: xrootdcert.pem
+  - mountPath: /etc/grid-security/xrootdkey.pem
+    name: xrootd-k8s-redir-stageout-key
+    subPath: xrootdkey.pem
+...
+volumes:
+- name: xrootd-k8s-redir-stageout-cert
+  secret:
+    defaultMode: 420
+    items:
+    - key: tls.crt
+      path: xrootdcert.pem
+    secretName: incommon-v2-k8s-redir-stageout.ultralight.org
+- name: xrootd-k8s-redir-stageout-key
+  secret:
+    defaultMode: 384
+    items:
+    - key: tls.key
+      path: xrootdkey.pem
+    secretName: incommon-v2-k8s-redir-stageout.ultralight.org
+  </code>
+</pre>
+
+<h3 class="h3">Request certificate for an HAProxy Endpoint</h3>
+For an HAProxy endpoint, you will need to create an Ingress object with the following annotations:
+<pre>
+    <code>
+        ---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: haproxy
+    kubernetes.io/ssl-passthrough: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  name: sense-fe-ingress-ense-caltech-fe-sdn-lb-ultralight-org
+  namespace: sense
+spec:
+  tls:
+  - hosts:
+    - sense-caltech-fe.sdn-lb.ultralight.org
+    secretName: sense-fe-sense-caltech-fe.sdn-lb.ultralight.org-le
+  rules:
+  - host: sense-caltech-fe.sdn-lb.ultralight.org
+    http:
+      paths:
+      - backend:
+          service:
+            name: sitefe-ense-caltech-fe-sdn-lb-ultralight-org
+            port:
+              number: 8443
+        path: /
+        pathType: Prefix
+    </code>
+</pre>
