@@ -1,0 +1,133 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h1">Jupyter Notebooks</h1>
+</div>
+
+<h2 class="h2">Basics of GPU Containers</h2>
+<h3 class="h3">Disclaimer</h3>
+GPU Resources are limited and shared among all users. Please be mindful of other users and do not use more resources than you need.
+<br/>
+If you are unsure about how to use GPU resources, please contact us at <a href="mailto:hep-wheel@caltech.edu">hep-wheel at caltech dot edu</a> or slack.
+<br/>
+Make sure not to waste resources, and always clean up after yourself. If you are not using the GPU, please release it for others to use.
+
+<h3 class="h3">What is available?</h3>
+You can find available GPU resources with the following command(s):
+<pre>
+  <code>
+(cmd)>kubectl get nodes -L nvidia.com/cuda.driver.major,nvidia.com/cuda.driver.minor,nvidia.com/cuda.driver.rev,nvidia.com/cuda.runtime.major,nvidia.com/cuda.runtime.minor,nvidia.com/gpu.product,nvidia.com/gpu.count
+NAME                          STATUS                     ROLES           AGE    VERSION   CUDA.DRIVER.MAJOR   CUDA.DRIVER.MINOR   CUDA.DRIVER.REV   CUDA.RUNTIME.MAJOR   CUDA.RUNTIME.MINOR   GPU.PRODUCT                         GPU.COUNT
+gpu-ibanks-1.ultralight.org   Ready                      <none>          29d    v1.27.3   510                 85                  02                11                   6                    NVIDIA-GeForce-GTX-TITAN-X-SHARED   2
+ </code>
+</pre>
+Or with kubectl describe nodes:
+<pre>
+  <code>
+(cmd)>kubectl describe nodes <nodename>
+    ...
+Capacity:
+  cpu:                48
+  ephemeral-storage:  102626232Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             98846140Ki
+  nvidia.com/gpu:     8
+  pods:               110
+Allocatable:
+  cpu:                48
+  ephemeral-storage:  94580335255
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             98743740Ki
+  nvidia.com/gpu:     8
+  pods:               110
+...
+  </code>
+</pre>
+
+<h3 class="h3">Run tensorflow</h3>
+Please be aware of cuda version and tensorflow version compatibility. You can find more details here: <a href="https://www.tensorflow.org/install/source#gpu">https://www.tensorflow.org/install/source#gpu</a>
+Create a file <code>example.yaml</code> and put this content inside the file:<br/>
+<pre>
+  <code>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tf-notebook
+  namespace: <REPLACE_ME_TO_YOUR_NAMESPACE_USERNAME>
+  labels:
+    app: tf-notebook
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    name: http
+    targetPort: 8888
+    nodePort: 30001
+  selector:
+    app: tf-notebook
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tf-notebook-2.13.1
+  namespace: <REPLACE_ME_TO_YOUR_NAMESPACE_USERNAME>
+  labels:
+    app: tf-notebook
+spec:
+  securityContext:
+    fsGroup: 0
+  containers:
+  - name: tf-notebook
+    image: tensorflow/tensorflow:2.13.0-gpu-jupyter
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    ports:
+    - containerPort: 8888
+      name: notebook
+  </code>
+</pre>
+Make sure to replace <code>&lt;REPLACE_ME_TO_YOUR_NAMESPACE_USERNAME&gt;</code> with your namespace username. Then, execute the following command <code>kubectl create -f example.yaml</code>. Output should be:<br/>
+<pre>
+  <code>
+$ kubectl create -f example.yaml
+service/tf-notebook created
+pod/tf-notebook-2.13.1 created
+  </code>
+</pre>
+Lets check pod status, you can do this with the following command: <code>kubectl get pods</code>. Expected output:<br/>
+<pre>
+  <code>
+$ kubectl get pods
+NAME                 READY   STATUS    RESTARTS   AGE
+tf-notebook-2.13.1   1/1     Running   0          20s
+  </code>
+</pre>
+
+<br/>
+As this is not exposed to the internet, you can use the following command to access the notebook:<br/>
+<pre>
+  <code>
+$ kubectl port-forward tf-notebook-2.13.1 8888:8888
+Forwarding from 127.0.0.1:8888 -> 8888
+Forwarding from [::1]:8888 -> 8888
+    </code>
+</pre>
+In a new terminal execute the following command to get Jupyter notebook token:
+<pre>
+  <code>
+    kubectl log tf-notebook-2.13.1
+    </code>
+</pre>
+You should see a token in the output, which you can copy and paste into the browser. You can now access the notebook by going to <a href="http://localhost:8888 ">http://localhost:8888</a> in your browser.
+
+<h3 class="h3">Clean up</h3>
+To clean up the resources, you can execute the following command: <code>kubectl delete -f example.yaml</code>. Output should be:<br/>
+<pre>
+  <code>
+$ kubectl delete -f example.yaml
+service "tf-notebook" deleted
+pod "tf-notebook-2.13.1" deleted
+  </code>
+</pre>
