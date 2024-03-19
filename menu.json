@@ -2,7 +2,7 @@
   "_order": ["User Documentation", "User Tutorial", "For Admins"],
   "User Documentation":
   [
-    {"name": "Access Guide", "page": "userdocs/access-guide.html", "feather":  "open"},
+    {"name": "Access Guide", "page": "userdocs/access-guide.html", "feather":  "book-open"},
     {"name": "Getting Started", "page": "userdocs/get-started.html", "feather":  "play"},
     {"name": "CLI Tools", "page": "userdocs/cli-tools.html", "feather":  "command"},
     {"name": "Policies", "page": "userdocs/policies.html", "feather":  "lock"},
