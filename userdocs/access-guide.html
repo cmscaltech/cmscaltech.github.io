@@ -1,3 +1,39 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Access and Guidebook</h1>
 </div>
+<h3 class="h3">Nodes and Access</h3>
+
+Caltech Tier2 and iBanks GPU Cluster use share CEPH Shared Filesystem and each user has its own home directory on CEPH (default home directory for all users).
+
+An SSH key is the only authentication (Administrators use 2FA). Please let the admins know (hep-wheel AT caltech.edu) in case of issues.
+
+Login nodes(can be used to access Caltech Tier2 and GPU Clusters):
+<ul>
+    <li>login-1.ultralight.org</li>
+    <li>login-2.ultralight.org</li>
+    <li>login-3.ultralight.org</li>
+</ul>
+
+<h3 class="h3">Data Storage and GPU Nodes</h3>
+The home directory should be used for software and although there is room, please prevent putting too much data within your home directory.
+
+<code>/wntmp/</code> - volume is mounted on all nodes, not all SSD’s. This is the preferred temporary location for HTCondor jobs.
+<code>/data/</code> - volume is mounted on some GPU nodes, not all SSD’s. This is the preferred temporary location for data needed for intensive I/O.
+<code>/imdata</code> - volume on GPU Nodes is a ramdisk of 40G with very high throughput, but utilizing the RAM of the machine. Please use this in case of need of very high i/o, but clean the space tightly, as this will use the node memory. There is a 2-day-since-last-access retention policy on it.
+<code>/storage/cms/</code> - path is the read-only access to the full Caltech Tier2 Ceph Storage. (Total space: ~5PB)
+<code>/storage/af/</code> - path for user home directories. (Total space: ~150TB). <code>/storage/af/user/${USER}</code> - is your home directory.
+
+<h3 class="h3">Grid proxy</h3>
+Before working on Tier2, make sure you have a valid grid proxy, also known as the VOMS proxy or X509 proxy.  Valid X509 Proxy is needed for condor job submissions and for any file transfers. For CMS Users, please follow the following documentation:
+<a href="https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideRunningGridPrerequisites#Grid_certificate">https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideRunningGridPrerequisites#Grid_certificate</a>
+<br>
+For non-CMS users – please use CILogon and the following page: <a href="https://cilogon.org">"https://cilogon.org"</a>
+
+<h3 class="h3">Accessing bulk CMS storage</h3>
+Once you have a valid proxy, use the gfal-ls, gfal-rm, gfal-copy tools to access the large-scale Ceph storage. This should be used to store multi-terabyte datasets for the longer term and for interfacing with the CMS grid.
+
+$ gfal-ls -l https://k8s-redir-stageout.ultralight.org:1094//store/user/
+drwxrwxrwx   0 0     0             0 Feb 11 06:28 user1	
+drwxrwxrwx   0 0     0             0 Feb 11 06:28 user2	
+drwxrwxrwx   0 0     0             0 Feb 11 06:28 user3	
+
